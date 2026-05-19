@@ -64,7 +64,24 @@ class SavingAccount(Bankaccount):
         self.balance += interest 
         print(f"Interest Rs. {interest:2f} added. Balance: Rs.{self.balance:2f}")
         
+print("="*45)
+print("         TESTING ERROR HANDLING ")
+print("="*45)
 
+acc = SavingAccount("Babin",balance=20000)
+acc.get_details()
+
+print("\n---Normal Operation---")
+acc.deposite(500)
+acc.withdraw(300)
+
+print("\n--Triggering errors---")
+acc.deposite(-100)
+acc.withdraw(0)
+acc.withdraw(2000)
+
+print("\n ---Interest--")
+acc.add_interest()
 
 
          
