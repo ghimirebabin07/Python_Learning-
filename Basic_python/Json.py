@@ -49,8 +49,23 @@ class BankAccount:
 
     def to_dict(self):
         return {
-            
+            "type": type(self).__name__,
+            "owner":self.owner,
+            "balance":self.balance
+
         }
+    
+    def save(self,filename ="account.json"):
+        with open(filename,"w") as f:
+            json.dump(self.to_dict(), f, indent=4)
+        print(f"Account saved to {filename})
+              
+
+    @staticmethod
+    def load(filename="account.json"): 
+        
+    
+
 
 
 
