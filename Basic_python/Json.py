@@ -58,12 +58,17 @@ class BankAccount:
     def save(self,filename ="account.json"):
         with open(filename,"w") as f:
             json.dump(self.to_dict(), f, indent=4)
-        print(f"Account saved to {filename})
+        print(f"Account saved to {filename}")
               
 
     @staticmethod
     def load(filename="account.json"): 
         
+            with open(filename,"r") as f:
+                data = json.load(f)
+
+            
+                
     
 
 
