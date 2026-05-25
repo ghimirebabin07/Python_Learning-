@@ -61,15 +61,44 @@ class BankAccount:
         print(f"Account saved to {filename}")
               
 
-    @staticmethod
-    def load(filename="account.json"): 
-        
-            with open(filename,"r") as f:
-                data = json.load(f)
 
-            
-                
-    
+    @staticmethod
+    def load(filename="account.json"):
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"{filename} not found")
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        owner = data.get("owner")
+        balance = data.get("balance", 0)
+        try:
+            balance = float(balance)
+            if balance.is_integer():
+                balance = int(balance)
+        except (TypeError, ValueError):
+            balance = 0
+
+        account = BankAccount(owner, balance)
+        print(f"Account loaded from {filename}")
+        return account
+
+
+
+if __name__ == '__main__':
+    # Simple demonstration
+    acct = BankAccount('Babin', 1000)
+    acct.deposite(500)
+    acct.withdraw(200)
+    acct.get_details()
+    acct.save('example_account.json')
+
+    loaded = BankAccount.load('example_account.json')
+    loaded.get_details()
+
+
+
+
 
 
 
