@@ -1,0 +1,5 @@
+{
+    "type": "BankAccount",
+    "owner": "Alice",
+    "balance": 1300
+}
