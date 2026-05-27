@@ -86,7 +86,6 @@ class BankAccount:
 
 
 if __name__ == '__main__':
-    # Simple demonstration
     acct = BankAccount('Babin', 1000)
     acct.deposite(500)
     acct.withdraw(200)
