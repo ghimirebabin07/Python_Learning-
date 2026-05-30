@@ -10,9 +10,9 @@ params = {
 
 response = requests.get(url, params=params)
 
-data = response.json()  # convert response to dictionary
+data = response.json()  
 
-weather = data["current_weather"]  # extract current weather
+weather = data["current_weather"]  
 
 print(f"Temperature : {weather['temperature']}°C")
 print(f"Wind Speed  : {weather['windspeed']} km/h")
