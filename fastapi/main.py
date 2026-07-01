@@ -10,6 +10,10 @@ def home ():
 def About ():
     return {"Message":"welcome from the about page"}
 
+@app.get("/user/{user_id}")
+def get_id(user_id:int):
+    return {"user_id":user_id}
+
 @app.get("/user")
-def user ():
-    return {"user":["Babin","Hari","Ram"]}
+def get_user(name):
+    return {"Name":name}
