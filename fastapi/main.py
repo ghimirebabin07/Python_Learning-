@@ -10,10 +10,14 @@ def home ():
 def About ():
     return {"Message":"welcome from the about page"}
 
-@app.get("/user/{user_id}")
-def get_id(user_id:int):
-    return {"user_id":user_id}
+@app.get("/products")
+def get_items (limit: int =10):
+    return{"Limits :":limit}
 
-@app.get("/user")
-def get_user(name):
-    return {"Name":name}
+
+@app.get("/items")
+def get_users(name:str=None, price:int=0):
+    return{
+        "Name:" :name,
+        "Price":price
+           }
