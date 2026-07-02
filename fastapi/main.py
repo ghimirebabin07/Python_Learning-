@@ -29,13 +29,43 @@ def get_users(name:str=None, price:int=0):
            }
 
 ###Post request 
-class user(BaseModel):
+# class user(BaseModel):
+#     name:str
+#     age:int
+
+# @app.post("/create-user")
+# def create_user(user:user):
+#     return{
+#         "message":"user created",
+#         "data":user
+#     }
+
+
+# class User(BaseModel):
+#     name:str
+#     age:int
+#     email:str
+
+# @app.post("/create_user")
+# def create_user(user:User):
+#     return {
+#         "message":"User created",
+#         "data":user
+#     }
+    
+
+class Address(BaseModel):
+    city:str
+    pincode:int
+
+class User(BaseModel):
     name:str
     age:int
+    address:Address
 
-@app.post("/create-user")
-def create_user(user:user):
-    return{
-        "message":"user created",
+@app.post("/Create_User")
+def Create_User(user:User):
+    return {
+        "Message":"User created",
         "data":user
     }
