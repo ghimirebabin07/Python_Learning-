@@ -4,29 +4,29 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-class user(BaseModel):
-    name:str
-    age:int
+# class user(BaseModel):
+#     name:str
+#     age:int
 
-@app.get("/")
-def home ():
-    return {"message":"Hello worl from fastapi venv"}
+# @app.get("/")
+# def home ():
+#     return {"message":"Hello worl from fastapi venv"}
 
-@app.get("/About")
-def About ():
-    return {"Message":"welcome from the about page"}
+# @app.get("/About")
+# def About ():
+#     return {"Message":"welcome from the about page"}
 
-@app.get("/products")
-def get_items (limit: int =10):
-    return{"Limits :":limit}
+# @app.get("/products")
+# def get_items (limit: int =10):
+#     return{"Limits :":limit}
 
 
-@app.get("/items")
-def get_users(name:str=None, price:int=0):
-    return{
-        "Name:" :name,
-        "Price":price
-           }
+# @app.get("/items")
+# def get_users(name:str=None, price:int=0):
+#     return{
+#         "Name:" :name,
+#         "Price":price
+#            }
 
 ###Post request 
 # class user(BaseModel):
@@ -54,18 +54,41 @@ def get_users(name:str=None, price:int=0):
 #     }
     
 
-class Address(BaseModel):
-    city:str
-    pincode:int
+# class Address(BaseModel):
+#     city:str
+#     pincode:int
 
-class User(BaseModel):
-    name:str
-    age:int
-    address:Address
+# class User(BaseModel):
+#     name:str
+#     age:int
+#     address:Address
 
-@app.post("/Create_User")
-def Create_User(user:User):
-    return {
-        "Message":"User created",
-        "data":user
-    }
+# @app.post("/Create_User")
+# def Create_User(user:User):
+#     return {
+#         "Message":"User created",
+#         "data":user
+#     }
+
+
+todos = []
+class Todo(BaseModel):
+    id : int
+    title:str
+    completed:bool
+
+@app.post("/todos")
+def create_todo(todo:Todo):
+    todos.append(todo)
+    return {"Message":"todo is added","data":todo}
+
+@app.get("/todos")
+def get_todos():
+    return todos
+
+@app.get("/todos/{todo_id}")
+def get_todo(todo_id:int):
+    for todo in todos:
+        if todo.id == todo_id:
+            return todo
+    return {"Error":"Todo not found "}

@@ -1,19 +1,6 @@
 import requests
 
-url = "https://api.open-meteo.com/v1/forecast"
+response = requests.get("https://api.github.com")
 
-params = {
-    "latitude": 27.7,
-    "longitude": 85.3,
-    "current_weather": True
-}
+print(response.status_code)
 
-response = requests.get(url, params=params)
-
-data = response.json()  
-
-weather = data["current_weather"]  
-
-print(f"Temperature : {weather['temperature']}°C")
-print(f"Wind Speed  : {weather['windspeed']} km/h")
-print(f"Weather Code: {weather['weathercode']}")
