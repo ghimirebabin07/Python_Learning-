@@ -92,3 +92,7 @@ def get_todo(todo_id:int):
         if todo.id == todo_id:
             return todo
     return {"Error":"Todo not found "}
+
+@app.put("/todos/{todo_id}")
+def update_todo(todo_id:int)
+
