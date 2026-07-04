@@ -96,11 +96,20 @@ def get_todo(todo_id:int):
 @app.put("/todos/{todo_id}")
 def update_todo(todo_id: int, updated_todo: Todo):
     for index, todo in enumerate(todos):
-        if todo.id == todo_id:
+        if todo.id == todo_id:   # Assuming Todo has an 'id' field
             todos[index] = updated_todo
             return {
-                "message": "Todo updated successfully",
-                "data": updated_todo
+                "Message": "Data Updated",
+                "Data": updated_todo
             }
 
     return {"Error": "Todo not found"}
+
+@app.delete("/todo/{todo_id}")
+def delete_todo(todo_id:int):
+    for index, todo in enumerate(todos):
+        if todo.id == todo_id:
+            todos.pop(index)
+            return {"message":"Data is Deleted"}
+    return {"Error":"todo not found"}
+        
