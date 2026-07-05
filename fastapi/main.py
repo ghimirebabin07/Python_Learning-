@@ -135,4 +135,11 @@ def update_user(user_id:int, user:User,notify:bool=False):
             "data":user
         }
     return {"Error":"user not found"}
-  
+
+ 
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    if user_id < len(users):
+        return users[user_id]
+
+    return {"Error": "User not found"}
