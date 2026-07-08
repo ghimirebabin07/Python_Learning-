@@ -1,23 +1,24 @@
 from fastapi import FastAPI,status,HTTPException
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-# class User(BaseModel):
-#     name:str
-#     age:int
-#     password:str
+class User(BaseModel):
+    name:str
+    age:int
+    password:str
 
-# class UserResponce(BaseModel):
-#     name:str
-#     age:int 
+class UserResponce(BaseModel):
+    name:str
+    age:int 
 
-# @app.get("/user", response_model=UserResponce)
-# def get_user():
-#     return {
-#         "name":"Babin",
-#         "age":20,
-#             "password":"1234"    }
+@app.get("/user", response_model=UserResponce)
+def get_user():
+    return {
+        "name":"Babin",
+        "age":20,
+            "password":"1234"    }
 
 @app.post("/user_created",status_code=status.HTTP_201_CREATED)
 def user_created():
@@ -48,3 +49,37 @@ def get_user(user_id:int):
         "id":1,
         "name":"babin"
     }
+
+
+class UserNotFoundException(Exception):
+    def __init__(self,name:str):
+        self.name = name
+        
+
+# exception handling 
+@app.get("/user/{user_id}")
+def get_user(user_id:int):
+    if user_id != 1:
+        raise HTTPException (
+            status_code=401,
+            detail="user not found"
+        )
+    return {
+        "message":"user",
+        "id":1,
+        "name":"Babin"
+    }
+
+@app.exception_handler(UserNotFoundException)
+def userNotFound(request: Request, exc: UserNotFoundException):
+    return JSONResponse(
+        status_code=404,
+        content={"message": f"User {exc.name} not found"}
+    )
+
+@app.get("/user/{name}")
+def get_user(name:str):
+    if name !="Babin":
+        raise UserNotFoundException (name)
+         
+    return { "name":name}
