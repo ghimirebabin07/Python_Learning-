@@ -83,3 +83,5 @@ def get_user(name:str):
         raise UserNotFoundException (name)
          
     return { "name":name}
+
+# Global error handling 
