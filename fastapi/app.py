@@ -1,6 +1,8 @@
-from fastapi import FastAPI,status,HTTPException,Depends,Header
+from fastapi import FastAPI,status,HTTPException,Depends,Header,Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+import time
+import sqlite3 
 
 app = FastAPI()
 
@@ -125,10 +127,45 @@ def secure_user(user = Depends(verify_token)):
            "message":"secure user accessed",
     "user":user
     }
-    
-    
-        
- 
-        
+
+# Middleware 
+@app.middleware("http")
+async def get_middleware(request:Request,call_next):
+    print("Request Received")
+
+    response =await call_next(request)
+
+    print("Responce sent")
+    return response     
 
 
+@app.middleware("http")
+async def log_time(request: Request, call_next):
+    start = time.time()
+
+    response = await call_next(request)
+
+    process_time = time.time()-start
+    print(f"Path:{request.url.path} | Time:{process_time}")
+   
+
+    return response
+
+#database integration 
+
+conn = sqlite3.connect("test.db",check_same_thread=False)
+
+cursor = conn.cursor ()
+cursor.execute("""
+ CREATE TABLE IF NOT EXISTS todos(
+               id INTEGER PRIMARY KEY,
+               title TEXT,
+               completed TEXT
+)
+              
+ """)
+@app.get("/home")
+def home():
+    return {
+        "message":"SQlite connected fine"
+    }
