@@ -1,4 +1,4 @@
-from fastapi import FastAPI,status,HTTPException
+from fastapi import FastAPI,status,HTTPException,Depends,Header
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 
@@ -84,4 +84,51 @@ def get_user(name:str):
          
     return { "name":name}
 
-# Global error handling 
+# dependence 
+
+def common_logic():
+    return {
+        "message":"Common Logic is executed"
+    }
+@app.get("/home")
+def home(data = Depends(common_logic)):
+    return data 
+# dependencies reuseable logic 
+
+def get_uset_data():
+    return {
+        "user":"Babin Ghimire"
+    }
+
+@app.get("/profile")
+def profile(user = Depends(get_uset_data)):
+    return user
+
+@app.get("/dashboard")
+def dashboard(user=Depends(get_uset_data)):
+    return user
+
+#Auth example 
+
+def verify_token(token:str=Header(None)):
+    if token != "mybabin":
+        raise HTTPException(
+            status_code=401, detail="User is unauthorized"
+        )
+    return {
+        "user":"Authorized user "
+    }
+
+@app.get("/secure-data")
+def secure_user(user = Depends(verify_token)):
+    return{
+           "message":"secure user accessed",
+    "user":user
+    }
+    
+    
+        
+ 
+        
+
+
