@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import time
 import sqlite3 
+from sqlalchemy import create_engine,Column,Integer,String
+from sqlalchemy.orm import sessionmaker,declarative_base,Session
 
 app = FastAPI()
 
@@ -168,4 +170,49 @@ cursor.execute("""
 def home():
     return {
         "message":"SQlite connected fine"
+    }
+# database integration using sqlalchemy 
+# Database URL (SQLite database file)
+DATABASE_URL = "sqlite:///./test.db"
+
+# Create a connection (engine) to the database
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False}  # Required for SQLite with FastAPI
+)
+
+# Create a session factory (used to create database sessions)
+sessionLocal = sessionmaker(bind=engine)
+
+# Base class for all database models (tables)
+Base = declarative_base()
+
+
+# Todo table (model)
+class Todo(Base):
+    __tablename__ = "todos"  # Database table name
+
+    id = Column(Integer, primary_key=True, index=True)  
+    title = Column(String)                              
+    completed = Column(String)                          
+
+
+# Create all tables if they don't already exist
+Base.metadata.create_all(bind=engine)
+
+
+# Dependency: provide a database session for each request
+def get_db():
+    db = sessionLocal()  # Open database session
+    try:
+        yield db         # Give the session to the route
+    finally:
+        db.close()       # Always close the session
+
+
+@app.get("/")
+def home(db: Session = Depends(get_db)):
+    # FastAPI injects the database session automatically
+    return {
+        "message": "DB connected fine"
     }
