@@ -61,3 +61,36 @@ def get_todo(todo_id = int, db:Session=Depends(get_db)):
     if not todo :
         raise HTTPException (status_code=404,detail="Todo Not found ")
     return todo 
+
+
+# Update operation 
+
+@app.put("/todos/{todo_id}")
+def update_todo(todo_id:int,title:str,db:Session=Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id==todo_id).first()
+
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found" )
+    
+    todo.title = title 
+    db.commit()
+    db.refresh(todo)
+    return {
+        "Message":"Todo Updated",
+        "data":todo
+    }
+
+#delete operations 
+
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id:int, db:Session=Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+
+    if not todo:
+        raise HTTPException(status_code=404,detail="todo not found")
+    
+    db.delete(todo)
+    db.commit()
+    return{
+        "message":"Todo Deleted"
+    }
