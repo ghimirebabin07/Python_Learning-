@@ -80,7 +80,7 @@ def update_todo(todo_id:int,title:str,db:Session=Depends(get_db)):
         "data":todo
     }
 
-#delete operations 
+#delete operations using fastapi 
 
 @app.delete("/todos/{todo_id}")
 def delete_todo(todo_id:int, db:Session=Depends(get_db)):
