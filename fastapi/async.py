@@ -1,11 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Depends,HTTPException,Header
 import time 
+from jose import jwt
+from datetime import datetime,timedelta,timezone
 import asyncio 
 
 app = FastAPI()
 
-app.get("/")
-async def home():
-    await asyncio.sleep(3)
-    return {
-                "Message":"Async Programming API "}
+# app.get("/")
+# async def home():
+#     await asyncio.sleep(3)
+#     return {
+#                 "Message":"Async Programming API "}
+
+#auth jwt 
+
+SECRET_KEY = "mysecret"
+ALGORITHM = "HS256"
+
+def create_token(data:dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc)+ timedelta(minutes=30)
+
