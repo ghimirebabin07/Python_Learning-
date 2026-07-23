@@ -21,3 +21,10 @@ def create_token(data:dict):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc)+ timedelta(minutes=30)
 
+
+@app.get("/fetch-data")
+async def fetch_data():
+    # Use an async client to make a non-blocking network call
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://example.com")
+    return response.json()
