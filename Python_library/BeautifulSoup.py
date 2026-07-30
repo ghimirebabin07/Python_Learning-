@@ -1,11 +1,20 @@
-# BeautifulSoup (bs4) is a Python library used for web scraping — it helps extract data from HTML and XML files.
+# Import requests to download the webpage
+import requests
 
+# Import BeautifulSoup to parse HTML
 from bs4 import BeautifulSoup
-import requests 
 
-url = "https://google.com"
+# Website we want to scrape
+url = "https://quotes.toscrape.com"
+
+# Send a GET request to the website
 response = requests.get(url)
 
+# Convert the HTML into a BeautifulSoup object
 soup = BeautifulSoup(response.text, "html.parser")
 
-print(soup.title.text)  # Get page title
+# Find the first quote on the page
+first_quote = soup.find("span", class_="text")
+
+# Print only the text inside the HTML tag
+print(first_quote.text) 

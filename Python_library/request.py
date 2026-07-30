@@ -1,6 +1,4 @@
-import requests
+import os
 
-response = requests.get("https://api.github.com")
-
-print(response.status_code)
-
+api_key = os.getenv("NVIDIA_API_KEY")
+print(api_key)  # Should print your API key
