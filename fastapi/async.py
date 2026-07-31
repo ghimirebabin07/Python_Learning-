@@ -126,3 +126,31 @@ async def profile():
         "payments": payments
 
     }
+
+
+# Simulate sending an email
+async def send_email():
+
+    print("Sending email...")
+
+    # Pretend sending the email takes 5 seconds
+    await asyncio.sleep(5)
+
+    print("Email sent!")
+
+
+@app.get("/order")
+async def place_order():
+
+    print("Order received")
+
+    # Start sending the email in the background
+    # This does NOT wait for the email to finish
+    asyncio.create_task(send_email())
+
+    print("Order saved")
+
+    # Respond immediately to the client
+    return {
+        "message": "Order placed successfully!"
+    }
