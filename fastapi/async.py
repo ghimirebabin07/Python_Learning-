@@ -1,8 +1,9 @@
-from fastapi import FastAPI,Depends,HTTPException,Header,httpx 
+from fastapi import FastAPI,Depends,HTTPException,Header
 import time 
 from jose import jwt
 from datetime import datetime,timedelta,timezone
 import asyncio 
+import httpx 
 
 
 app = FastAPI()
@@ -54,4 +55,74 @@ async def get_user():
         "id": user["id"],
         "name": user["name"],
         "email": user["email"]
+    }
+
+# Simulate fetching user information
+async def get_user():
+
+    print("Fetching user...")
+
+    # Pretend the database takes 2 seconds
+    await asyncio.sleep(2)
+
+    print("User fetched!")
+
+    return {
+        "name": "Babin",
+        "age": 20
+    }
+
+
+# Simulate fetching orders
+async def get_orders():
+
+    print("Fetching orders...")
+
+    await asyncio.sleep(2)
+
+    print("Orders fetched!")
+
+    return [
+        "Laptop",
+        "Keyboard",
+        "Mouse"
+    ]
+
+
+# Simulate fetching payment history
+async def get_payments():
+
+    print("Fetching payments...")
+
+    await asyncio.sleep(2)
+
+    print("Payments fetched!")
+
+    return {
+        "total_paid": 2500
+    }
+
+
+@app.get("/profile")
+async def profile():
+
+    # Run ALL three functions at the same time
+    user, orders, payments = await asyncio.gather(
+
+        get_user(),
+
+        get_orders(),
+
+        get_payments()
+
+    )
+
+    return {
+
+        "user": user,
+
+        "orders": orders,
+
+        "payments": payments
+
     }
