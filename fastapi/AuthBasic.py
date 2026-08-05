@@ -1,7 +1,9 @@
 from fastapi import FastAPI,Header,Depends,HTTPException
 from fastapi.security import APIKeyHeader
 from fastapi.security import APIKeyQuery
-from jose import jwt 
+from jose import jwt, JWTError
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm 
+from passlib.context import CryptContext
 from datetime import datetime,timedelta ,timezone
 
 
@@ -123,4 +125,110 @@ def profile(user: str = Depends(verify_token)):
     return {
         "message": "secure data accessed:",
         "user": user
+    }
+
+
+# JWT Settings using 0auth
+SECRET_KEY = "babin"
+ALGORITHM = "HS256"
+
+# OAuth2 will expect the token to be obtained from /signin
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
+
+
+# Create JWT Token
+def create_token(data: dict):
+    to_encode = data.copy()
+
+    # Token expires in 30 minutes
+    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+
+    to_encode.update({
+        "exp": expire
+    })
+
+    # Generate JWT
+    token = jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    return token
+
+
+# Verify JWT Token
+def verify_token(token: str = Depends(oauth2_scheme)):
+    try:
+        # Decode JWT
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        # Get username
+        username = payload.get("sub")
+
+        if username is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid Token"
+            )
+
+        return username
+
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or Expired Token"
+        )
+
+
+# User Sign In
+@app.post("/signin")
+def signin(form_data: OAuth2PasswordRequestForm = Depends()):
+
+    # Dummy user authentication
+    if form_data.username != "admin" or form_data.password != "123":
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Username or Password"
+        )
+
+    # Create JWT
+    access_token = create_token({
+        "sub": form_data.username
+    })
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+# Protected Route
+@app.get("/dashboard")
+def dashboard(current_user: str = Depends(verify_token)):
+    return {
+        "message": f"Welcome {current_user}",
+        "status": "Access Granted"
+    }
+
+
+# Another Protected Route
+@app.get("/account")
+def account(current_user: str = Depends(verify_token)):
+    return {
+        "user": current_user,
+        "email": "admin@example.com",
+        "role": "Administrator"
+    }
+
+
+# Public Route
+@app.get("/")
+def home():
+    return {
+        "message": "Welcome to FastAPI JWT Authentication"
     }
