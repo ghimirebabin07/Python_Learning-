@@ -4,7 +4,7 @@ venv/
 env/
 
 # Python cache
-__pycache__/
+*__pycache__/
 *.py[cod]
 *$py.class
 
@@ -29,6 +29,7 @@ dist/
 
 # SQLite database
 *.db
+/fastapi/.db 
 
 # Log files
 *.log
