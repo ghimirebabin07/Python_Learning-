@@ -185,22 +185,23 @@ def verify_token(token: str = Depends(oauth2_scheme)):
         )
 
 
-# User Sign In
+# User Login
 @app.post("/signin")
 def signin(form_data: OAuth2PasswordRequestForm = Depends()):
 
-    # Dummy user authentication
+    # Check username and password
     if form_data.username != "admin" or form_data.password != "123":
         raise HTTPException(
             status_code=401,
             detail="Invalid Username or Password"
         )
 
-    # Create JWT
+    # Create JWT token
     access_token = create_token({
         "sub": form_data.username
     })
 
+    # Return the token
     return {
         "access_token": access_token,
         "token_type": "bearer"
@@ -210,6 +211,7 @@ def signin(form_data: OAuth2PasswordRequestForm = Depends()):
 # Protected Route
 @app.get("/dashboard")
 def dashboard(current_user: str = Depends(verify_token)):
+    # Runs only if the token is valid
     return {
         "message": f"Welcome {current_user}",
         "status": "Access Granted"
@@ -219,6 +221,7 @@ def dashboard(current_user: str = Depends(verify_token)):
 # Another Protected Route
 @app.get("/account")
 def account(current_user: str = Depends(verify_token)):
+    # Show user details after token verification
     return {
         "user": current_user,
         "email": "admin@example.com",
@@ -229,6 +232,7 @@ def account(current_user: str = Depends(verify_token)):
 # Public Route
 @app.get("/")
 def home():
+    # Anyone can access this route
     return {
         "message": "Welcome to FastAPI JWT Authentication"
     }
