@@ -17,6 +17,7 @@ def verify_token(token:str = Header()):
 
 def get_user(user=Depends(verify_token)):
     return {
+
         "Message":"Welcome!",
         "User":user
     }
@@ -235,4 +236,120 @@ def home():
     # Anyone can access this route
     return {
         "message": "Welcome to FastAPI JWT Authentication"
+    }
+
+
+
+# JWT Role-Based Authentication
+
+SECRET_KEY = "babin"
+ALGORITHM = "HS256"
+
+
+# Create JWT with username and role
+def create_role_token(data: dict):
+    to_encode = data.copy()
+
+    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+
+    to_encode.update({
+        "exp": expire
+    })
+
+    return jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+
+# Login
+@app.post("/role-login")
+def role_login(username: str, password: str):
+
+    # Dummy users
+    if username == "admin" and password == "123":
+        role = "admin"
+
+    elif username == "user" and password == "123":
+        role = "user"
+
+    else:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password"
+        )
+
+    # Put username + role inside JWT
+    token = create_role_token({
+        "sub": username,
+        "role": role
+    })
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
+
+
+# Verify JWT
+def verify_role_token(token: str = Header(None)):
+
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        username = payload.get("sub")
+        role = payload.get("role")
+
+        if username is None or role is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid token"
+            )
+
+        return {
+            "username": username,
+            "role": role
+        }
+
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
+
+
+# Admin-only route
+@app.get("/admin")
+def admin_dashboard(
+    current_user=Depends(verify_role_token)
+):
+
+    if current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
+
+    return {
+        "message": "Welcome to Admin Dashboard",
+        "user": current_user["username"],
+        "role": current_user["role"]
+    }
+
+
+# Normal user route
+@app.get("/user")
+def user_dashboard(
+    current_user=Depends(verify_role_token)
+):
+
+    return {
+        "message": "Welcome to User Dashboard",
+        "user": current_user["username"],
+        "role": current_user["role"]
     }
