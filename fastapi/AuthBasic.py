@@ -353,3 +353,46 @@ def user_dashboard(
         "user": current_user["username"],
         "role": current_user["role"]
     }
+
+# Create refresh token
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+
+    expire = datetime.now(timezone.utc) + timedelta(days=7)
+
+    to_encode.update({
+        "exp": expire,
+        "type": "refresh"
+    })
+
+    return jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+
+# Login with access + refresh token
+@app.post("/refresh-login")
+def refresh_login(username: str, password: str):
+
+    if username != "admin" or password != "123":
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password"
+        )
+
+    access_token = create_role_token({
+        "sub": username,
+        "role": "admin"
+    })
+
+    refresh_token = create_refresh_token({
+        "sub": username
+    })
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    } 
